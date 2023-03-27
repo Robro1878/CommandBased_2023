@@ -24,20 +24,13 @@ public class Paths {
     public PathPlannerTrajectory Blue_3_McDouble;
     public PathPlannerTrajectory Blue_3_McTriple;
     public PathPlannerTrajectory Blue_1_McTriple;
-    public PathPlannerTrajectory Blue_1_McDouble;
     public PathPlannerTrajectory Blue_3_McDouble_Combo_Meal;
-    public PathPlannerTrajectory Blue_3_McDouble_Deluxe_pt1;
-    public PathPlannerTrajectory Blue_3_McDouble_Deluxe_pt2;
-    public PathPlannerTrajectory Blue_3_McDouble_Deluxe_pt3;
 
 
     //Event map
     public static HashMap<String, Command> eventMap = new HashMap<>();
     
     Paths(){
-    
-    Blue_1_McDouble = 
-    PathPlanner.loadPath("Blue 1 McDouble", new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecond, DriveConstants.kMaxAccelerationMetersPerSecondSquared), true);
 
     Blue_3_McDouble = 
     PathPlanner.loadPath("Blue 3 McDouble", new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecond, DriveConstants.kMaxAccelerationMetersPerSecondSquared), true);
@@ -51,21 +44,10 @@ public class Paths {
     Blue_3_McDouble_Combo_Meal =
     PathPlanner.loadPath("Blue 3 McDouble Combo Meal", new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecond, DriveConstants.kMaxAccelerationMetersPerSecondSquared), true);
 
-    Blue_3_McDouble_Deluxe_pt1 = 
-    PathPlanner.loadPath("Blue 3 McDouble Deluxe pt1", new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecond, DriveConstants.kMaxAccelerationMetersPerSecondSquared), true);
-
-    Blue_3_McDouble_Deluxe_pt2 = 
-    PathPlanner.loadPath("Blue 3 McDouble Deluxe pt2", new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecond, DriveConstants.kMaxAccelerationMetersPerSecondSquared), false);
-
-    Blue_3_McDouble_Deluxe_pt3 = 
-    PathPlanner.loadPath("Blue 3 McDouble Deluxe pt3", new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecond, DriveConstants.kMaxAccelerationMetersPerSecondSquared), false);
-
-    
-
         eventMap.put("Intake Deploy", new IntakeDeploy(GroundIntakeConstants.kCubeIntakeSpeed));
         eventMap.put("Intake Stow", new IntakeStow());
-        eventMap.put("Eject Cube Low Speed", new IntakeEject(GroundIntakeConstants.kCubeEjectSpeedLow));
-        eventMap.put("Eject Cube High Speed", new IntakeEject(GroundIntakeConstants.kCubeEjectSpeed));
+        eventMap.put("Eject Cube Low Speed", new IntakeEject(GroundIntakeConstants.kCubeEjectSpeedLow).withTimeout(1));
+        eventMap.put("Eject Cube High Speed", new IntakeEject(GroundIntakeConstants.kCubeEjectSpeed).withTimeout(1));
     }
 
     public static HashMap<String, Command> getEventMap(){

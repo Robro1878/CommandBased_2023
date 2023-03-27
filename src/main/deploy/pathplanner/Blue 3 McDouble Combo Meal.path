@@ -147,12 +147,12 @@
       }
     }
   ],
-  "maxVelocity": 2.0,
-  "maxAcceleration": 2.0,
+  "maxVelocity": 3.0,
+  "maxAcceleration": null,
   "isReversed": true,
   "markers": [
     {
-      "position": 0.39737215909090906,
+      "position": 0.6443536931818186,
       "names": [
         "Intake Deploy"
       ]
