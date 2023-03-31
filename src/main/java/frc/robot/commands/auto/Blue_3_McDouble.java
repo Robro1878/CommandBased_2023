@@ -48,8 +48,7 @@ public class Blue_3_McDouble extends SequentialCommandGroup {
       // Score the piece in the high position (Cube or Cone)
       // and stow the arm
       new AutoArmScoreHigh(), // Move Arm & Telescope to high node position
-      new WaitUntilCommand(m_arm::atGoal).withTimeout(2),
-      new WaitUntilCommand(m_telescope::atSetpoint).withTimeout(2), //Maybe this is a better way of doing it instead of waiting for a certain number of seconds
+      new WaitCommand(m_robotShared.calculateAutoArmScoreDelay()),
       new ParallelDeadlineGroup (
         new WaitCommand(m_robotShared.calculateDunkScoreDelay()),
         new ClawScore()
