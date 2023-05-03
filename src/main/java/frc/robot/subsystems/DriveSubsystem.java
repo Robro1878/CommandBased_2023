@@ -45,6 +45,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
 // import edu.wpi.first.math.trajectory.TrajectoryConfig;
 // import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 // import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
@@ -81,6 +82,8 @@ public class DriveSubsystem extends SubsystemBase {
     SlewRateLimiter speedLimiter;
 
     private DriveTrainTab m_DriveTrainTab;
+
+    private PIDController fieldOrientedDrivePIDDontroller;
 
     private RobotShared m_robotShared;
     private PhotonVisionSubsystem m_PhotonVision;
@@ -167,6 +170,52 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void simpleArcadeDrive(double fwd, double rot, boolean squaredInput) {
     m_drive.arcadeDrive(fwd, rot, squaredInput);
+  }
+
+  public PIDController getFieldOrientedPIDController(){
+    if (fieldOrientedDrivePIDDontroller == null){
+      fieldOrientedDrivePIDDontroller = new PIDController(AutoConstants.kAngleCorrectionP, 0, 0);
+      fieldOrientedDrivePIDDontroller.enableContinuousInput(-180, 180);
+    } 
+    return fieldOrientedDrivePIDDontroller;
+  }
+
+  public void FieldOrientedDrive(double xInput, double yInput, double rot){
+    if (xInput == 0 && yInput == 0){
+      arcadeDrive(0, rot, false);
+  } else{
+  
+    double angleInput = (Units.radiansToDegrees(rectangularToPolarAngle(xInput, yInput))-90)*-1;
+
+    if (fieldOrientedReverse(angleInput)){
+      simpleArcadeDrive(
+        speedLimiter.calculate(rectangularToPolarRadius(xInput, yInput) * -1), 
+        getFieldOrientedPIDController().calculate(calculateHeading(getHeading() + 180), angleInput), 
+        false);
+    }
+    if (fieldOrientedReverse(angleInput) == false)
+    simpleArcadeDrive(
+      speedLimiter.calculate(rectangularToPolarRadius(xInput, yInput)), 
+      getFieldOrientedPIDController().calculate(getHeading(), angleInput), 
+      false);
+  }
+}
+
+  public boolean fieldOrientedReverse(double angleInput){
+    return Math.abs(calculateHeading(angleInput - getHeading())) > 90;
+    //if difference between inputted angle and current angle is greater than 90, robot should drive backwards to reach heading
+  }
+
+  public double rectangularToPolarAngle(double x, double y){ //returns polar angle in radians from +pi to -pi hopefully
+    return Math.atan2(y, x);
+  }
+
+  public double rectangularToPolarRadius(double x, double y){
+    return Math.sqrt((Math.pow(x, 2)+Math.pow(y, 2)));
+  }
+
+  public double calculateHeading(double angle){
+    return Math.IEEEremainder(angle, 360);
   }
   /**
   *    * Controls the left and right sides of the drive directly with voltages.
